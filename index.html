@@ -3,152 +3,48 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Desk Dashboard</title>
-<link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#000000">
-<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Desk Dashboard</title>
 <style>
-  :root { color-scheme: dark; }
-  * { box-sizing: border-box; }
-  html, body { width:100%; height:100%; margin:0; background:#000; overflow:hidden; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", sans-serif;
-    color:#f5f5f5;
-    display:grid;
-    place-items:center;
-  }
-  main {
-    width:min(92vw, 1500px);
-    text-align:center;
-    transform: translateY(-1vh);
-  }
-  #time {
-    font-size:clamp(120px, 23vw, 370px);
-    font-weight:500;
-    letter-spacing:-0.06em;
-    line-height:.88;
-    font-variant-numeric:tabular-nums;
-  }
-  #date {
-    margin-top:5vh;
-    font-size:clamp(36px, 5.3vw, 86px);
-    font-weight:400;
-    color:#c9c9c9;
-    letter-spacing:-.035em;
-  }
-  #weather {
-    margin:6vh auto 0;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:28px;
-    min-height:110px;
-  }
-  #icon { font-size:clamp(58px, 7vw, 112px); line-height:1; }
-  #temp {
-    font-size:clamp(58px, 7vw, 112px);
-    font-weight:500;
-    font-variant-numeric:tabular-nums;
-  }
-  .divider { width:1px; height:82px; background:#3b3b3b; margin:0 4px; }
-  #weatherText {
-    text-align:left;
-    font-size:clamp(24px, 2.5vw, 40px);
-    color:#d0d0d0;
-    line-height:1.45;
-  }
-  #range {
-    margin-top:1.8vh;
-    color:#999;
-    font-size:clamp(20px, 2.1vw, 34px);
-  }
-  #status {
-    position:fixed; bottom:18px; left:0; right:0;
-    text-align:center; color:#555; font-size:16px;
-    opacity:0; transition:opacity .3s;
-  }
-  body:hover #status { opacity:1; }
-</style>
-</head>
-<body>
-<main>
-  <div id="time">--:--</div>
-  <div id="date">-월 -일 -요일</div>
-  <div id="weather">
-    <div id="icon">☀️</div>
-    <div id="temp">--°C</div>
-    <div class="divider"></div>
-    <div id="weatherText"><div id="condition">날씨 불러오는 중</div><div>서울</div></div>
-  </div>
-  <div id="range">최고 --° · 최저 --°</div>
+:root{color-scheme:dark;--x:0px;--y:0px}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;background:#000;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Segoe UI",sans-serif;color:#f5f5f5;display:grid;place-items:center}
+main{width:min(92vw,1500px);text-align:center;transform:translate(var(--x),calc(-1vh + var(--y)));transition:transform 4s ease-in-out,opacity 2s ease;will-change:transform}
+body.dim main{opacity:.60}
+#time{font-size:clamp(120px,23vw,370px);font-weight:500;letter-spacing:-.06em;line-height:.88;font-variant-numeric:tabular-nums}
+#date{margin-top:5vh;font-size:clamp(36px,5.3vw,86px);color:#c9c9c9;letter-spacing:-.035em}
+#weather{margin:6vh auto 0;display:flex;justify-content:center;align-items:center;gap:28px;min-height:110px}
+#icon{font-size:clamp(58px,7vw,112px)}
+#temp{font-size:clamp(58px,7vw,112px);font-weight:500;font-variant-numeric:tabular-nums}
+.divider{width:1px;height:82px;background:#3b3b3b}
+#weatherText{text-align:left;font-size:clamp(24px,2.5vw,40px);color:#d0d0d0;line-height:1.45}
+#range{margin-top:1.8vh;color:#999;font-size:clamp(20px,2.1vw,34px)}
+</style></head>
+<body><main>
+<div id="time">--:--</div><div id="date">-월 -일 -요일</div>
+<div id="weather"><div id="icon">☀️</div><div id="temp">--°C</div><div class="divider"></div>
+<div id="weatherText"><div id="condition">날씨 불러오는 중</div><div>서울</div></div></div>
+<div id="range">최고 --° · 최저 --°</div>
 </main>
-<div id="status"></div>
-
 <script>
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
+function clock(){const d=new Date();$('time').textContent=new Intl.DateTimeFormat('ko-KR',{hour:'2-digit',minute:'2-digit',hour12:false}).format(d);$('date').textContent=new Intl.DateTimeFormat('ko-KR',{month:'long',day:'numeric',weekday:'long'}).format(d)}
+clock();setInterval(clock,1000);
+const codes={0:['맑음','☀️'],1:['대체로 맑음','🌤️'],2:['부분적으로 흐림','⛅'],3:['흐림','☁️'],45:['안개','🌫️'],48:['안개','🌫️'],51:['약한 이슬비','🌦️'],53:['이슬비','🌦️'],55:['강한 이슬비','🌧️'],61:['약한 비','🌦️'],63:['비','🌧️'],65:['강한 비','🌧️'],71:['약한 눈','🌨️'],73:['눈','🌨️'],75:['강한 눈','❄️'],80:['소나기','🌦️'],81:['소나기','🌧️'],82:['강한 소나기','⛈️'],95:['뇌우','⛈️'],96:['우박 동반 뇌우','⛈️'],99:['강한 뇌우','⛈️']};
+async function weather(){try{const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=1',{cache:'no-store'});const w=await r.json(),d=codes[w.current.weather_code]||['날씨','🌡️'];$('icon').textContent=d[1];$('temp').textContent=Math.round(w.current.temperature_2m)+'°C';$('condition').textContent=d[0];$('range').textContent='최고 '+Math.round(w.daily.temperature_2m_max[0])+'°  ·  최저 '+Math.round(w.daily.temperature_2m_min[0])+'°'}catch(e){$('condition').textContent='날씨 연결 실패'}}
+weather();setInterval(weather,600000);
 
-function updateClock() {
-  const d = new Date();
-  $('time').textContent = new Intl.DateTimeFormat('ko-KR', {
-    hour:'2-digit', minute:'2-digit', hour12:false
-  }).format(d);
-  $('date').textContent = new Intl.DateTimeFormat('ko-KR', {
-    month:'long', day:'numeric', weekday:'long'
-  }).format(d);
-}
-updateClock();
-setInterval(updateClock, 1000);
+// OLED burn-in protection: subtle deterministic pixel shift every 5 minutes.
+const positions=[[0,0],[12,6],[-10,8],[8,-10],[-12,-6],[4,12],[-6,-12],[14,-4],[-14,4]];
+let pi=0;
+function shift(){pi=(pi+1)%positions.length;const [x,y]=positions[pi];document.documentElement.style.setProperty('--x',x+'px');document.documentElement.style.setProperty('--y',y+'px')}
+setInterval(shift,300000);
 
-const weatherCodes = {
-  0:['맑음','☀️'], 1:['대체로 맑음','🌤️'], 2:['부분적으로 흐림','⛅'],
-  3:['흐림','☁️'], 45:['안개','🌫️'], 48:['안개','🌫️'],
-  51:['약한 이슬비','🌦️'], 53:['이슬비','🌦️'], 55:['강한 이슬비','🌧️'],
-  61:['약한 비','🌦️'], 63:['비','🌧️'], 65:['강한 비','🌧️'],
-  71:['약한 눈','🌨️'], 73:['눈','🌨️'], 75:['강한 눈','❄️'],
-  80:['소나기','🌦️'], 81:['소나기','🌧️'], 82:['강한 소나기','⛈️'],
-  95:['뇌우','⛈️'], 96:['우박 동반 뇌우','⛈️'], 99:['강한 뇌우','⛈️']
-};
+// Once every 30 minutes, dim the dashboard to 60% for one minute.
+function dim(){document.body.classList.add('dim');setTimeout(()=>document.body.classList.remove('dim'),60000)}
+setInterval(dim,1800000);
 
-async function updateWeather() {
-  // Seoul City Hall coordinates. No API key required (Open-Meteo).
-  const url = 'https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=1';
-  try {
-    const r = await fetch(url, {cache:'no-store'});
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const w = await r.json();
-    const code = w.current.weather_code;
-    const desc = weatherCodes[code] || ['날씨','🌡️'];
-    $('icon').textContent = desc[1];
-    $('temp').textContent = Math.round(w.current.temperature_2m) + '°C';
-    $('condition').textContent = desc[0];
-    $('range').textContent =
-      '최고 ' + Math.round(w.daily.temperature_2m_max[0]) + '°  ·  최저 ' +
-      Math.round(w.daily.temperature_2m_min[0]) + '°';
-    $('status').textContent = '날씨 업데이트 ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
-  } catch (e) {
-    $('condition').textContent = '날씨 연결 실패';
-    $('status').textContent = '인터넷 연결 후 날씨가 자동 갱신됩니다.';
-  }
-}
-updateWeather();
-setInterval(updateWeather, 10 * 60 * 1000);
-
-// Double tap/click toggles browser fullscreen where supported.
-let lastTap = 0;
-document.addEventListener('pointerup', async () => {
-  const now = Date.now();
-  if (now - lastTap < 350) {
-    try {
-      if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
-      else await document.exitFullscreen();
-    } catch(e) {}
-  }
-  lastTap = now;
-});
-
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
-}
-</script>
-</body>
-</html>
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+</script></body></html>
